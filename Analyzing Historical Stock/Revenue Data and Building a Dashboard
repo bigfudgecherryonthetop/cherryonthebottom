@@ -1,0 +1,66 @@
+# question 1
+Tesla = yf.Ticker("TSLA")
+tesla_data = Tesla.history(period="max")
+tesla_data.reset_index(inplace=True)
+tesla_data
+
+# question 2
+html_data = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0220EN-SkillsNetwork/labs/project/revenue.htm"
+html_data = requests.get(html_data).text
+soup = BeautifulSoup(html_data, "html.parser")
+
+table_body = soup.find_all("tbody")[1]
+
+data = []
+for row in table_body.find_all("tr"):
+    cols = row.find_all("td")
+    if len(cols) == 2: 
+        data.append({
+            "Date": cols[0].text.strip(),
+            "Revenue": cols[1].text.strip()
+        })
+
+tesla_revenue = pd.DataFrame(data)
+
+tesla_revenue["Revenue"] = tesla_revenue['Revenue'].str.replace(',|\$',"")
+tesla_revenue.dropna(inplace=True)
+
+tesla_revenue = tesla_revenue[tesla_revenue['Revenue'] != ""]
+tesla_revenue.tail()
+
+# question 3
+GameStop = yf.Ticker("GME")
+gme_data = GameStop.history(period="max")
+gme_data.reset_index(inplace=True)
+gme_data.head()
+
+
+# question 4
+html_data = 'https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0220EN-SkillsNetwork/labs/project/stock.html'
+html_data = requests.get(html_data).text
+soup = BeautifulSoup(html_data, "html.parser")
+table_body = soup.find_all("tbody")[1]
+
+data = []
+for row in table_body.find_all("tr"):
+    cols = row.find_all("td")
+    if len(cols) == 2: 
+        data.append({
+            "Date": cols[0].text.strip(),
+            "Revenue": cols[1].text.strip()
+        })
+
+gme_revenue = pd.DataFrame(data)
+
+gme_revenue["Revenue"] = gme_revenue['Revenue'].str.replace(',|\$',"")
+gme_revenue.dropna(inplace=True)
+gme_revenue = gme_revenue[gme_revenue['Revenue'] != ""]
+
+gme_revenue.tail()
+
+
+# question 5
+make_graph(tesla_data, tesla_revenue, 'Tesla')
+
+# question 6
+make_graph(gme_data, gme_revenue, 'GameStop')
